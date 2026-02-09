@@ -2,42 +2,44 @@ import streamlit as st
 import json
 import matplotlib.pyplot as plt
 
-# 1. PROFESYONEL ARAYÜZ VE WORD ŞERİDİ STİLİ
-st.set_page_config(page_title="SoruRota Studio v8", layout="wide")
+# 1. PROFESYONEL ARAYÜZ VE SEMBOLİK ARAÇ ÇUBUĞU STİLİ
+st.set_page_config(page_title="SoruRota Studio v9", layout="wide")
 
 st.markdown("""
     <style>
-    /* Genel Yazı Tipi Ayarları */
-    html, body, [class*="css"] { font-size: 14px !important; font-family: 'Aptos', sans-serif !important; }
+    /* Genel Tipografi */
+    html, body, [class*="css"] { font-size: 14px !important; font-family: 'Segoe UI', sans-serif !important; }
     
-    /* Word Stili Araç Çubuğu (Toolbar) */
+    /* Word Stili Sembolik Araç Çubuğu */
     .word-toolbar {
         background-color: #f3f3f3;
-        padding: 5px 10px;
-        border: 1px solid #d2d2d2;
+        padding: 4px 8px;
+        border: 1px solid #c8c8c8;
         border-radius: 4px 4px 0 0;
         display: flex;
-        gap: 8px;
+        gap: 2px;
         align-items: center;
     }
-    .stTextArea textarea { border-radius: 0 0 5px 5px !important; border-top: none !important; }
+    .stTextArea textarea { border-radius: 0 0 5px 5px !important; border-top: none !important; font-size: 13px !important; }
     
-    /* Ön İzleme Kağıdı */
+    /* Sınav Kağıdı Ön İzleme Alanı */
     .exam-paper {
         background-color: white;
-        padding: 40px;
-        border: 1px solid #ccc;
-        border-radius: 2px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        max-width: 800px;
-        margin: auto;
-        color: black;
-        min-height: 800px;
+        padding: 50px;
+        border: 1px solid #b5b5b5;
+        border-radius: 0px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        max-width: 750px;
+        margin: 20px auto;
+        color: #000;
+        min-height: 900px;
+        line-height: 1.5;
     }
+    .stButton>button { border: 1px solid #ccc; padding: 2px 8px !important; height: 28px !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. VERİ YÖNETİMİ
+# 2. VERİ YÖNETİMİ VE DURUM KONTROLÜ
 if 'questions' not in st.session_state:
     st.session_state.questions = [{
         "soruYazari": "", "kazanim": "", "konu": "Yeni Soru", "ustMetin": "", "soruMetni": "", 
@@ -46,100 +48,102 @@ if 'questions' not in st.session_state:
 if 'curr_idx' not in st.session_state:
     st.session_state.curr_idx = 0
 
-# 3. YAN MENÜ
+# 3. YAN MENÜ (HAVUZ VE DOSYA)
 with st.sidebar:
-    st.title("📂 Soru Havuzu")
-    up_json = st.file_uploader("JSON Yükle", type=['json'], label_visibility="collapsed")
+    st.subheader("📁 Dosya")
+    up_json = st.file_uploader("Yükle", type=['json'], label_visibility="collapsed")
     if up_json: st.session_state.questions = json.load(up_json)
     
     st.divider()
+    st.caption("📋 Soru Listesi")
     for i, ques in enumerate(st.session_state.questions):
-        if st.sidebar.button(f"{i+1}. {ques.get('konu', 'Adsız')[:15]}", key=f"q_btn_{i}", use_container_width=True):
+        if st.sidebar.button(f"{i+1}. {ques.get('konu', '')[:12]}", key=f"nav_{i}", use_container_width=True):
             st.session_state.curr_idx = i
             st.rerun()
     
-    if st.sidebar.button("+ Yeni Soru Ekle", type="primary", use_container_width=True):
+    if st.sidebar.button("➕ Ekle", type="primary", use_container_width=True):
         st.session_state.questions.append({"soruYazari": "", "kazanim": "", "konu": "Yeni Soru", "ustMetin": "", "soruMetni": "", "secenekler": {"A": "", "B": "", "C": "", "D": ""}, "pythonKodu": "", "dogruCevap": "A", "cozum": ""})
         st.session_state.curr_idx = len(st.session_state.questions) - 1
         st.rerun()
 
 q = st.session_state.questions[st.session_state.curr_idx]
 
-# 4. WORD STİLİ ARAÇ ÇUBUĞU FONKSİYONU
-def render_word_toolbar(key_name):
-    st.markdown(f'<div class="word-toolbar"><b>{key_name} Düzenle</b></div>', unsafe_allow_html=True)
-    t_col = st.columns([0.5, 0.5, 0.5, 0.5, 0.5, 0.7, 0.7, 0.7, 4])
-    if t_col[0].button("**K**", key=f"k_{key_name}"): q[key_name] += "<b></b>"
-    if t_col[1].button("*T*", key=f"t_{key_name}"): q[key_name] += "<i></i>"
-    if t_col[2].button("<u>A</u>", key=f"a_{key_name}"): q[key_name] += "<u></u>"
-    if t_col[3].button("~~ab~~", key=f"ab_{key_name}"): q[key_name] += "<strike></strike>"
-    if t_col[4].button("x₂", key=f"x2_{key_name}"): q[key_name] += "<sub></sub>"
-    if t_col[5].button("x²", key=f"xsq_{key_name}"): q[key_name] += "<sup></sup>"
-    if t_col[6].button("Boyut", key=f"sz_{key_name}"): q[key_name] += "<span style='font-size:18px;'></span>"
-    if t_col[7].button("Renk", key=f"cl_{key_name}"): q[key_name] += "<span style='color:red;'></span>"
+# 4. SADECE SEMBOLLERDEN OLUŞAN ARAÇ ÇUBUĞU
+def render_symbol_toolbar(key_name):
+    st.markdown(f'<div class="word-toolbar"></div>', unsafe_allow_html=True)
+    cols = st.columns([0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 5])
+    if cols[0].button("𝐁", key=f"b_{key_name}"): q[key_name] += "<b></b>"
+    if cols[1].button("𝐼", key=f"i_{key_name}"): q[key_name] += "<i></i>"
+    if cols[2].button("𝚄", key=f"u_{key_name}"): q[key_name] += "<u></u>"
+    if cols[3].button("̶S̶", key=f"s_{key_name}"): q[key_name] += "<strike></strike>"
+    if cols[4].button("x₂", key=f"x2_{key_name}"): q[key_name] += "<sub></sub>"
+    if cols[5].button("x²", key=f"xsq_{key_name}"): q[key_name] += "<sup></sup>"
+    if cols[6].button("A🡩", key=f"sz_{key_name}"): q[key_name] += "<span style='font-size:18px;'></span>"
+    if cols[7].button("🎨", key=f"cl_{key_name}"): q[key_name] += "<span style='color:red;'></span>"
 
-# 5. ANA PANEL
-tab_edit, tab_prev = st.tabs(["📝 Soru Tasarımı", "🔍 Sınav Kağıdı Ön İzleme"])
+# 5. ANA ÇALIŞMA ALANI
+tab_edit, tab_prev = st.tabs(["📝 Tasarım", "🔍 Sınav Kağıdı"])
 
 with tab_edit:
-    c_edit, c_vis = st.columns([1.1, 0.9])
-    with c_edit:
-        st.subheader("Metin ve Senaryo")
-        q['soruYazari'] = st.text_input("Yazar", q.get('soruYazari', ''))
+    col_l, col_r = st.columns([1, 0.8])
+    
+    with col_l:
+        st.caption("Künye")
+        c1, c2, c3 = st.columns(3)
+        q['soruYazari'] = c1.text_input("Yazar", q.get('soruYazari', ''), label_visibility="collapsed")
+        q['kazanim'] = c2.text_input("Kazanım", q.get('kazanim', ''), label_visibility="collapsed")
+        q['konu'] = c3.text_input("Konu", q.get('konu', ''), label_visibility="collapsed")
         
-        render_word_toolbar('ustMetin')
-        q['ustMetin'] = st.text_area("", q.get('ustMetin', ''), height=100, label_visibility="collapsed", key="ta_ust")
+        render_symbol_toolbar('ustMetin')
+        q['ustMetin'] = st.text_area("", q.get('ustMetin', ''), height=80, label_visibility="collapsed", key="at_u")
         
-        render_word_toolbar('soruMetni')
-        q['soruMetni'] = st.text_area("", q.get('soruMetni', ''), height=120, label_visibility="collapsed", key="ta_kok")
+        render_symbol_toolbar('soruMetni')
+        q['soruMetni'] = st.text_area("", q.get('soruMetni', ''), height=100, label_visibility="collapsed", key="at_s")
         
-        st.write("**Seçenekler (Alt Alta)**")
-        for opt in ["A", "B", "C", "D"]:
-            q['secenekler'][opt] = st.text_input(f"{opt} Seçeneği", q['secenekler'].get(opt, ""))
+        st.caption("Seçenekler (A-B-C-D)")
+        for char in ["A", "B", "C", "D"]:
+            q['secenekler'][char] = st.text_input(char, q['secenekler'].get(char, ""), label_visibility="collapsed")
         
-        q['dogruCevap'] = st.selectbox("Doğru Cevap", ["A", "B", "C", "D"], index=["A","B","C","D"].index(q.get('dogruCevap', 'A')))
+        q['dogruCevap'] = st.selectbox("Cevap", ["A", "B", "C", "D"], index=["A","B","C","D"].index(q.get('dogruCevap', 'A')))
 
-    with c_vis:
-        st.subheader("Yüksek Kaliteli Görsel Motoru")
-        q['pythonKodu'] = st.text_area("Python Çizim Kodu", q.get('pythonKodu', ""), height=200)
+    with col_r:
+        st.caption("🖼️ Görsel Kod (High-DPI)")
+        q['pythonKodu'] = st.text_area("", q.get('pythonKodu', ""), height=180, label_visibility="collapsed")
         
         if q.get('pythonKodu'):
             try:
                 plt.clf()
-                # Yüksek DPI ile daha kaliteli görsel [cite: 10]
-                fig, ax = plt.subplots(figsize=(4, 3), dpi=150) 
+                fig, ax = plt.subplots(figsize=(4, 2.5), dpi=150) # Kalite artırıldı
                 exec(q['pythonKodu'])
                 st.pyplot(fig, use_container_width=False)
-            except Exception as e:
-                st.info("Çizim kodu bekleniyor veya hata var.")
+            except: st.info("Kod bekleniyor...")
 
 with tab_prev:
     st.markdown("<div class='exam-paper'>", unsafe_allow_html=True)
-    st.markdown(f"<div style='text-align:right; font-size:12px;'>Yazar: {q.get('soruYazari', '')}</div>", unsafe_allow_html=True)
-    st.markdown("### FEN BİLİMLERİ BAŞARI TESTİ", unsafe_allow_html=True)
-    st.divider()
+    st.markdown(f"<div style='text-align:right; font-size:11px;'>Yazar: {q['soruYazari']}</div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center;'>FEN BİLİMLERİ TESTİ</h2>", unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
     
     if q.get('ustMetin'):
-        st.markdown(f"<div style='margin-bottom:20px;'>{q['ustMetin']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-bottom:15px;'>{q['ustMetin']}</div>", unsafe_allow_html=True)
     
-    # Ön İzlemede Ortalı ve Kaliteli Görsel
     if q.get('pythonKodu'):
         try:
             plt.clf()
-            fig_p, ax_p = plt.subplots(figsize=(5, 3.5), dpi=200)
+            fig_p, ax_p = plt.subplots(figsize=(5, 3), dpi=200) # Ön izlemede maksimum kalite
             exec(q['pythonKodu'])
-            _, mid_c, _ = st.columns([0.5, 2, 0.5])
-            mid_c.pyplot(fig_p, use_container_width=False)
+            _, mid, _ = st.columns([0.5, 2, 0.5])
+            mid.pyplot(fig_p, use_container_width=False)
         except: pass
     
-    st.markdown(f"<div style='font-size:18px; font-weight:bold; margin:20px 0;'>{q.get('soruMetni', '')}</div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='font-size:17px; font-weight:bold; margin:15px 0;'>{q['soruMetni']}</div>", unsafe_allow_html=True)
     
-    # Seçenekler Alt Alta 
-    for k, v in q.get('secenekler', {}).items():
-        st.markdown(f"<div style='margin-bottom:10px;'><b>{k})</b> {v}</div>", unsafe_allow_html=True)
+    # Seçenekler Alt Alta
+    for k, v in q['secenekler'].items():
+        st.markdown(f"<div style='margin-bottom:8px;'><b>{k})</b> {v}</div>", unsafe_allow_html=True)
     
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 6. KAYDET
+# 6. DIŞA AKTAR
 final_json = json.dumps(st.session_state.questions, indent=4, ensure_ascii=False)
-st.sidebar.download_button("💾 Havuzu JSON Olarak İndir", final_json, "havuz_v8.json", use_container_width=True)
+st.sidebar.download_button("💾 JSON İndir", final_json, "havuz_v9.json", use_container_width=True)
