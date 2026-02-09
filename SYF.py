@@ -29,7 +29,7 @@ if 'current_index' not in st.session_state:
 # 3. YAN MENÜ: VERİ YÖNETİMİ VE HAVUZ ÖNİZLEME
 st.sidebar.header("📁 Veri ve Havuz Yönetimi")
 
-# JSON Yükleme Bölümü [cite: 53]
+# JSON Yükleme Bölümü 
 uploaded_file = st.sidebar.file_uploader("Mevcut JSON Havuzunu Yükle", type=['json'])
 if uploaded_file is not None:
     try:
@@ -61,8 +61,8 @@ with tab1:
     with col_edit:
         st.subheader("📄 Soru Bilgileri")
         q['soruYazari'] = st.text_input("Soru Yazarı", q.get('soruYazari', ''))
-        q['kazanim'] = st.text_input("Kazanım (Örn: 6.1.1.1)", q.get('kazanim', '')) [cite: 41, 156]
-        q['zorluk'] = st.slider("Zorluk Katsayısı (1.0: Kolay, 0.0: Zor)", 0.0, 1.0, float(q.get('zorluk', 0.7))) [cite: 13, 36]
+        q['kazanim'] = st.text_input("Kazanım (Örn: 6.1.1.1)", q.get('kazanim', '')) 
+        q['zorluk'] = st.slider("Zorluk Katsayısı (1.0: Kolay, 0.0: Zor)", 0.0, 1.0, float(q.get('zorluk', 0.7)))
         
         st.subheader("✍️ Metin ve Vurgu Düzenleme")
         # HTML Butonları 
@@ -74,7 +74,7 @@ with tab1:
         q['ustMetin'] = st.text_area("Üst Metin / Deney Senaryosu", q.get('ustMetin', ''), height=80)
         q['soruMetni'] = st.text_area("Soru Kökü", q.get('soruMetni', ''), height=120)
         
-        st.write("Seçenekler (Çeldiriciler Kaliteli Olmalı) [cite: 34-35]")
+        st.write("Seçenekler (Çeldiriciler Kaliteli Olmalı) ")
         sc1, sc2 = st.columns(2)
         q['secenekler']['A'] = sc1.text_input("A Şıkkı", q['secenekler'].get('A', ''))
         q['secenekler']['B'] = sc2.text_input("B Şıkkı", q['secenekler'].get('B', ''))
@@ -82,7 +82,7 @@ with tab1:
         q['secenekler']['D'] = sc2.text_input("D Şıkkı", q['secenekler'].get('D', ''))
         
         q['dogruCevap'] = st.selectbox("Doğru Cevap", ["A", "B", "C", "D"], index=["A", "B", "C", "D"].index(q.get('dogruCevap', 'A')))
-        q['cozum'] = st.text_area("Pedagojik Çözüm (Kısa ve Öz) [cite: 37, 44]", q.get('cozum', ''))
+        q['cozum'] = st.text_area("Pedagojik Çözüm (Kısa ve Öz) ", q.get('cozum', ''))
 
     with col_vis:
         st.subheader("📊 Görsel ve Çizim Motoru ")
@@ -106,7 +106,7 @@ with tab2:
     st.markdown(f"**Yazar:** {q['soruYazari']} | **Kazanım:** {q['kazanim']} | **Zorluk:** {q['zorluk']}")
     if q['ustMetin']: st.write(q['ustMetin'])
     
-    # Görseli burada tekrar render ediyoruz [cite: 8]
+    # Görseli burada tekrar render ediyoruz 
     if q['pythonKodu']:
         try:
             plt.clf()
@@ -132,4 +132,5 @@ if st.sidebar.button("➕ Havuza Yeni Soru Ekle"):
     st.rerun()
 
 final_json = json.dumps(st.session_state.questions, indent=4, ensure_ascii=False)
-st.sidebar.download_button("💾 Havuzu JSON Olarak İndir [cite: 53]", final_json, "soru_havuzu.json", "application/json")
+st.sidebar.download_button("💾 Havuzu JSON Olarak İndir", final_json, "soru_havuzu.json", "application/json")
+
