@@ -1,0 +1,23 @@
+[
+  {
+    "soruYazari": "Sizin Adınız",
+    "sinifDuzeyi": "6. Sınıf",
+    "ders": "Fen Bilimleri",
+    "zorluk": 0.7,
+    "kazanim": "6.1.1.1",
+    "konu": "Güneş Sistemi",
+    "unite": "Güneş Sistemi ve Tutulmalar",
+    "ustMetin": "Güneş sistemindeki gezegenler Güneş'e olan uzaklıklarına göre sıralanmaktadır.",
+    "gorsel": "Gezegenlerin Güneş etrafındaki yörüngelerini gösteren bir şema.",
+    "soruMetni": "Aşağıdaki gezegenlerden hangisi <u>iç gezegenler</u> sınıfında yer almaz?",
+    "secenekler": {
+      "A": "Merkür",
+      "B": "Venüs",
+      "C": "Dünya",
+      "D": "Jüpiter"
+    },
+    "dogruCevap": "D",
+    "cozum": "Merkür, Venüs ve Dünya iç (karasal) gezegen iken; Jüpiter bir dış (gaz devleri) gezegendir.",
+    "pythonKodu": "import matplotlib.pyplot as plt\nplt.circle((0,0), 1)\nplt.show()"
+  }
+]
