@@ -11,7 +11,7 @@ st.markdown("""
     .stButton>button { width: 100%; border-radius: 5px; height: 2em; }
     .preview-box { border: 1px solid #ddd; padding: 15px; border-radius: 10px; background-color: #f9f9f9; }
     </style>
-    """, unsafe_allow_name=True)
+    """, unsafe_allow_html=True)
 
 st.title("🧪 Fen Bilimleri Soru Geliştirme Merkezi")
 
@@ -96,4 +96,5 @@ if st.sidebar.button("➕ Yeni Soru Ekle"):
     st.rerun()
 
 final_json = json.dumps(st.session_state.questions, indent=4, ensure_ascii=False)
+
 st.sidebar.download_button("💾 Havuzu JSON Olarak İndir", final_json, "soru_havuzu.json")
