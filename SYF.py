@@ -81,7 +81,7 @@ with tab2:
         try: exec(q['pythonKodu'])
         except: pass
         
-    st.markdown(f"### {q['soruMetni']}", unsafe_allow_name=True)
+    st.markdown(f"### {q['soruMetni']}", unsafe_allow_html=True)
     for k, v in q['secenekler'].items():
         st.write(f"**{k})** {v}")
     
@@ -98,3 +98,4 @@ if st.sidebar.button("➕ Yeni Soru Ekle"):
 final_json = json.dumps(st.session_state.questions, indent=4, ensure_ascii=False)
 
 st.sidebar.download_button("💾 Havuzu JSON Olarak İndir", final_json, "soru_havuzu.json")
+
